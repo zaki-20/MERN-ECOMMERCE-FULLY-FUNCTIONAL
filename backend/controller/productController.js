@@ -12,9 +12,12 @@ exports.createProduct = catchAsyncErrors( async (req, res, next) => {
 });
 
 //get all products
-exports.getAllProducts = catchAsyncErrors(async (req, res) => {
+exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
     const products = await Product.find();
    
+    if (!products || products.length === 0) {
+      return next(new ErrorHandler("product not found", 404));
+    }
     res.status(200).json({
       success: true,
       products,
@@ -25,8 +28,8 @@ exports.getAllProducts = catchAsyncErrors(async (req, res) => {
 exports.getProductDetails = catchAsyncErrors(  async (req, res, next) => {
     
       const product = await Product.findById(req.params.id);
-      console.log('Product ID:', req.params.id);
-      console.log('Product:', product);
+      // console.log('Product ID:', req.params.id);
+      // console.log('Product:', product);
       if (!product) {
         return next(new ErrorHandler("product not found", 404));
       }
