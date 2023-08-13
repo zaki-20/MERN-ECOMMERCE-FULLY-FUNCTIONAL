@@ -87,22 +87,27 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     try {
         await sendEmail({
-          email: user.email,
-          subject: `Zack Ecommerce Password Recovery`,
-          message,
+            email: user.email,
+            subject: `Zack Ecommerce Password Recovery`,
+            message,
         });
-    
+
         res.status(200).json({
-          success: true,
-          message: `Email sent to ${user.email} successfully`,
+            success: true,
+            message: `Email sent to ${user.email} successfully`,
         });
-      } catch (error) {
+    } catch (error) {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
-    
+
         await user.save({ validateBeforeSave: false });
-    
-        return next(new ErrorHandler(error.message, 500));
-      }
+        return next(new ErrorHandler(error, 500));
+    }
 
 })
+
+// //Reset password
+// exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
+
+
+// })
