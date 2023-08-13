@@ -25,16 +25,16 @@ class ApiFeatres {
 
         removeFields.forEach((key) => delete queryCopy[key]);
 
-        console.log(queryCopy)
+       
         // Filter For Price and Rating
 
         let queryStr = JSON.stringify(queryCopy);
-        console.log(queryStr)
+      
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`);
-        console.log(queryStr)
+      
 
         this.query = this.query.find(JSON.parse(queryStr));
-        console.log(JSON.parse(queryStr))
+    
        
 
         return this;

@@ -1,4 +1,4 @@
-const { log } = require('console');
+
 const mongoose = require('mongoose')
 
 const connectDatabase = () => {
