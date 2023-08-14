@@ -116,13 +116,13 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     // creating token hash
     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-  
+
     //find user having reset hashed token and whose expiry time is grater than current data
     const user = await User.findOne({
         resetPasswordToken, resetPasswordExpire: { $gt: Date.now() },
     });
 
- 
+
     //check user exists
     if (!user) {
         return next(new ErrorHandler("Reset Password Token is invalid or has been expired", 400))
@@ -145,3 +145,15 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     sendToken(user, 200, res);
 
 })
+
+
+// Get User Detail
+exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+
+    res.status(200).json({
+        success: true,
+        user,
+    });
+});
+
