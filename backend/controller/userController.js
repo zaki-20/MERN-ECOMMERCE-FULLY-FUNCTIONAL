@@ -3,6 +3,8 @@ const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail");
+const crypto = require("crypto");
+
 
 
 //create user with jwt
@@ -83,7 +85,8 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false })
 
-    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`;
+    console.log(req.get("host"))
 
     const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
@@ -108,17 +111,18 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 })
 
-//Reset password
+//Reset password======================================================================
 exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     // creating token hash
     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-
+  
     //find user having reset hashed token and whose expiry time is grater than current data
     const user = await User.findOne({
         resetPasswordToken, resetPasswordExpire: { $gt: Date.now() },
     });
 
+ 
     //check user exists
     if (!user) {
         return next(new ErrorHandler("Reset Password Token is invalid or has been expired", 400))
@@ -129,7 +133,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Password does not password", 400));
     }
 
-    //if passwords match and setted undefined gor resetTokens because no further usage
+    //if passwords match and setted undefined for resetTokens because no further usage
     user.password = req.body.password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
